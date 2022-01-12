@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="db4a25aa-8f33-407d-8b3d-f2d545e0de24" >
+		<http:request-connection host="processapi-insurancepolicy.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="GetInsuranceFlow" doc:id="7f481137-e847-4200-824a-9571a5dd383b" >
+		<http:request method="GET" doc:name="Request" doc:id="eb42539d-1145-43c5-9ff2-a34a2d16232a" config-ref="HTTP_Request_configuration" path="/api/InsuranceData">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"dbSource" : attributes.queryParams.dbSource
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="2c10d0db-cd4b-4df7-9d96-012bdabb825f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="InsuranceQuotaionFlow" doc:id="13a8a1b8-d6a5-432a-a515-b543067baf7a" >
+		<http:request method="PUT" doc:name="Request" doc:id="c8acce12-c23c-4070-839d-bcd8f21d629e" config-ref="HTTP_Request_configuration" path="/api/InsuranceData/{Id}">
+			<http:body ><![CDATA[#[{}]]]></http:body>
+			<http:uri-params ><![CDATA[#[output application/json
+---
+{
+	"Id" : attributes.uriParams.ID
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="66a03555-61e6-44fa-8470-0cd42d54408d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

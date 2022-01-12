@@ -1,0 +1,36 @@
+#%RAML 1.0
+title: ExperienceAPI-InsurancePolicy
+
+types:
+  InsuranceType: !include Datatype/dataType.raml
+
+/Insurance:
+    
+  get:
+    queryParameters:
+      dbSource:
+        required: false
+        enum:
+          - Salesforce
+          - PostgreSQL
+         
+    responses:
+      200:
+        body:
+          application/json:
+            type: InsuranceType[]
+            examples:
+              output: !include Example/example.raml
+    
+  /{ID}:   
+    
+    get:
+ 
+      responses:
+        201:
+          body:
+            application/json:
+              example:
+                message: Quotation added successfully!!! 
+              
+    
